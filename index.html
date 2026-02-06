@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探究教室 TRAIL - カリキュラムポータル</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #DEE2E6; border-radius: 3px; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const COURSES = [
+      { id: "kids", name: "探究キッズ", target: "小1〜小2", day: "月曜日", color: "#FF6B6B", accent: "#FFE0E0", icon: "🌱", description: "好奇心の芽を育てる、はじめての探究体験" },
+      { id: "starter", name: "探究スターター", target: "小2〜小3", day: "月曜日", color: "#FFA94D", accent: "#FFF0E0", icon: "⭐", description: "「なぜ？」を深掘りする力を身につける" },
+      { id: "basic", name: "探究ベーシック", target: "小4〜小5", day: "土曜日", color: "#51CF66", accent: "#E0FFE8", icon: "🔍", description: "自分で問いを立て、調べ、まとめる力を育てる" },
+      { id: "advance", name: "探究アドバンス", target: "小6〜中1", day: "火曜日", color: "#339AF0", accent: "#E0F0FF", icon: "🚀", description: "論理的思考と発信力を高める探究学習" },
+      { id: "limitless", name: "探究リミットレス", target: "中2〜中3", day: "火曜日", color: "#7950F2", accent: "#F0E8FF", icon: "♾️", description: "AI時代を生き抜く、限界なき探究" },
+    ];
+
+    const LESSONS_DATA = {
+      kids: [
+        { id: 101, date: "2026-01-05", title: "探究ってなに？", summary: "「なぜ？」「どうして？」を大切にする探究学習のオリエンテーション。自己紹介と好きなものマップを作りました。", tags: ["導入", "自己紹介"], notebookUrl: "#" },
+        { id: 102, date: "2026-01-12", title: "色のふしぎ", summary: "絵の具を混ぜて新しい色を作る実験。「なぜ混ぜると違う色になるの？」という問いを探究しました。", tags: ["理科", "アート"], notebookUrl: "#" },
+        { id: 103, date: "2026-01-19", title: "音の正体をさぐろう", summary: "輪ゴムや紙コップを使って音の振動を体験。大きい音と小さい音の違いを調べました。", tags: ["理科", "実験"], notebookUrl: "#" },
+        { id: 104, date: "2026-01-26", title: "冬の自然たんけん", summary: "冬の植物や空気の変化を観察。「冬はなぜ寒いの？」について考えました。", tags: ["自然", "観察"], notebookUrl: "#" },
+        { id: 105, date: "2026-02-02", title: "どうして空は青いの？", summary: "光の散乱について、実験をしながら考えました。プリズムを使って虹を作る体験も。", tags: ["理科", "光"], notebookUrl: "#" },
+      ],
+      starter: [
+        { id: 201, date: "2026-01-05", title: "ミイラと永遠の命", summary: "なぜ人は死後の世界を信じたのか？古代文明のなぞに迫る探究。", tags: ["世界史", "古代文明"], notebookUrl: "https://notebooklm.google.com/notebook/beb4c588-e19e-4cae-a447-b9408118abf3" },
+        { id: 202, date: "2026-01-05", title: "スフィンクスのなぞ", summary: "砂漠に眠る巨大像の正体。地球と資源について考える自然探究。", tags: ["自然", "地球と資源"], notebookUrl: "https://notebooklm.google.com/notebook/6e3ffd05-e5ce-42c1-bd2a-0b4a58691e81" },
+        { id: 203, date: "2026-01-05", title: "グリーンランド", summary: "氷におおわれた島の本当の姿。資源と国際競争を考える。", tags: ["国際問題", "資源と国際競争"], notebookUrl: "https://notebooklm.google.com/notebook/4152a565-1408-4fa3-98b5-8b854c59d60b" },
+        { id: 204, date: "2026-01-12", title: "レアアース", summary: "現代文明を支える見えない資源。資源と国際競争を探究する。", tags: ["国際問題", "資源と国際競争"], notebookUrl: "https://notebooklm.google.com/notebook/d0c36709-898d-4f5d-93b6-e876c6e2042f" },
+        { id: 205, date: "2026-01-19", title: "鳥獣戯画", summary: "日本最古のマンガは何を伝えた？飛鳥・奈良・平安の日本文化を探る。", tags: ["日本文化", "飛鳥・奈良・平安"], notebookUrl: "https://notebooklm.google.com/notebook/4d022939-dfc2-45d6-a3bf-a70bd7fede0e" },
+        { id: 206, date: "2026-01-26", title: "富嶽三十六景", summary: "世界を魅了した富士山の力。浮世絵を通じて日本文化を探究する。", tags: ["日本文化", "浮世絵"], notebookUrl: "https://notebooklm.google.com/notebook/0e4f9f6b-2a58-4ff1-8d45-26f6a648e969" },
+        { id: 207, date: "2026-02-02", title: "東海道五十三次", summary: "旅ブームを生んだ江戸のメディア。浮世絵と日本文化を探究する。", tags: ["日本文化", "浮世絵"], notebookUrl: "https://notebooklm.google.com/notebook/ec170a9b-53a5-4d02-8921-bb522abe426f" },
+      ],
+      basic: [
+        { id: 301, date: "2026-01-10", title: "ミイラと永遠の命", summary: "なぜ人は死後の世界を信じたのか？古代文明のなぞに迫る探究。", tags: ["世界史", "古代文明"], notebookUrl: "https://notebooklm.google.com/notebook/beb4c588-e19e-4cae-a447-b9408118abf3" },
+        { id: 302, date: "2026-01-10", title: "スフィンクスのなぞ", summary: "砂漠に眠る巨大像の正体。地球と資源について考える自然探究。", tags: ["自然", "地球と資源"], notebookUrl: "https://notebooklm.google.com/notebook/6e3ffd05-e5ce-42c1-bd2a-0b4a58691e81" },
+        { id: 303, date: "2026-01-17", title: "グリーンランド", summary: "氷におおわれた島の本当の姿。資源と国際競争を考える。", tags: ["国際問題", "資源と国際競争"], notebookUrl: "https://notebooklm.google.com/notebook/4152a565-1408-4fa3-98b5-8b854c59d60b" },
+        { id: 304, date: "2026-01-17", title: "レアアース", summary: "現代文明を支える見えない資源。資源と国際競争を探究する。", tags: ["国際問題", "資源と国際競争"], notebookUrl: "https://notebooklm.google.com/notebook/d0c36709-898d-4f5d-93b6-e876c6e2042f" },
+        { id: 305, date: "2026-01-24", title: "鳥獣戯画", summary: "日本最古のマンガは何を伝えた？飛鳥・奈良・平安の日本文化を探る。", tags: ["日本文化", "飛鳥・奈良・平安"], notebookUrl: "https://notebooklm.google.com/notebook/4d022939-dfc2-45d6-a3bf-a70bd7fede0e" },
+        { id: 306, date: "2026-01-24", title: "富嶽三十六景", summary: "世界を魅了した富士山の力。浮世絵を通じて日本文化を探究する。", tags: ["日本文化", "浮世絵"], notebookUrl: "https://notebooklm.google.com/notebook/0e4f9f6b-2a58-4ff1-8d45-26f6a648e969" },
+        { id: 307, date: "2026-01-31", title: "東海道五十三次", summary: "旅ブームを生んだ江戸のメディア。浮世絵と日本文化を探究する。", tags: ["日本文化", "浮世絵"], notebookUrl: "https://notebooklm.google.com/notebook/ec170a9b-53a5-4d02-8921-bb522abe426f" },
+      ],
+      advance: [
+        { id: 401, date: "2026-01-06", title: "クリティカルシンキング入門", summary: "思い込みや偏見に気づくワーク。「本当にそうか？」と問い直す習慣を身につけます。", tags: ["思考力", "導入"], notebookUrl: "#" },
+        { id: 402, date: "2026-01-13", title: "SDGsと私たちの生活", summary: "17の目標から自分に関係の深いものを選び、地域の課題と結びつけて考えました。", tags: ["社会課題", "SDGs"], notebookUrl: "#" },
+        { id: 403, date: "2026-01-20", title: "データリテラシー基礎", summary: "平均・中央値・最頻値の違いを学び、データの読み方・騙されない見方を練習しました。", tags: ["数学", "データ"], notebookUrl: "#" },
+        { id: 404, date: "2026-01-27", title: "AIアートに挑戦", summary: "画像生成AIを使って作品を制作。「AIの創造性」について議論しました。", tags: ["AI", "アート"], notebookUrl: "#" },
+        { id: 405, date: "2026-02-03", title: "社会課題をAIで解決？", summary: "食品ロスの問題を題材に、AIでどんな解決策が考えられるかディスカッションしました。", tags: ["AI", "社会課題"], notebookUrl: "#" },
+      ],
+      limitless: [
+        { id: 501, date: "2026-01-06", title: "AIと共創する未来", summary: "AI時代に求められるスキルとは何か。人間ならではの価値について深く議論しました。", tags: ["AI", "未来"], notebookUrl: "#" },
+        { id: 502, date: "2026-01-13", title: "起業家マインドセット", summary: "課題発見から解決策の提案まで、起業家的な思考プロセスを体験しました。", tags: ["起業", "思考力"], notebookUrl: "#" },
+        { id: 503, date: "2026-01-20", title: "論文を読んでみよう", summary: "学術論文の構造を学び、実際の論文を読んで要約する練習をしました。", tags: ["研究", "読解"], notebookUrl: "#" },
+        { id: 504, date: "2026-01-27", title: "ディベート実践", summary: "「AIは人間の仕事を奪うか」をテーマに本格的なディベートを行いました。", tags: ["ディベート", "AI"], notebookUrl: "#" },
+        { id: 505, date: "2026-02-03", title: "AI時代のキャリアを考える", summary: "10年後の仕事の変化を予測し、自分の「強み×AI」の掛け合わせを探りました。", tags: ["キャリア", "AI"], notebookUrl: "#" },
+      ],
+    };
+
+    // ─── Utility ───
+    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+    const getFirstDayOfWeek = (year, month) => new Date(year, month, 1).getDay();
+    const formatDate = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+    const MONTH_NAMES = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+
+    // ─── LessonCard ───
+    function LessonCard({ lesson, course, onClick }) {
+      return (
+        <div onClick={onClick} style={{ background: "#fff", borderRadius: 16, padding: "20px 24px", cursor: "pointer", border: `1px solid ${course.accent}`, borderLeft: `4px solid ${course.color}`, transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${course.color}18`; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: "#868E96", fontFamily: "'DM Mono', monospace" }}>{lesson.date.replace(/-/g, ".")}</span>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              {lesson.tags.map((tag) => (
+                <span key={tag} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 99, background: course.accent, color: course.color, fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A2E", margin: "4px 0 8px", lineHeight: 1.4 }}>{lesson.title}</h3>
+          <p style={{ fontSize: 13.5, color: "#5C5C6F", lineHeight: 1.7, margin: 0 }}>{lesson.summary}</p>
+          <div style={{ marginTop: 14 }}>
+            <span style={{ fontSize: 12, color: course.color, fontWeight: 600, letterSpacing: 0.3 }}>NotebookLM で詳しく見る →</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── LessonModal ───
+    function LessonModal({ lesson, course, onClose }) {
+      if (!lesson) return null;
+      return (
+        <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20, animation: "fadeIn 0.2s ease" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 20, padding: "32px 36px", maxWidth: 520, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.15)", animation: "slideUp 0.3s ease" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span style={{ fontSize: 12, padding: "4px 12px", borderRadius: 99, background: course.accent, color: course.color, fontWeight: 700 }}>{course.icon} {course.name}</span>
+              <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#ADB5BD", padding: 4 }}>✕</button>
+            </div>
+            <p style={{ fontSize: 13, color: "#868E96", marginBottom: 4, fontFamily: "'DM Mono', monospace" }}>{lesson.date.replace(/-/g, ".")}</p>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1A1A2E", margin: "8px 0 16px", lineHeight: 1.4 }}>{lesson.title}</h2>
+            <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+              {lesson.tags.map((tag) => (
+                <span key={tag} style={{ fontSize: 12, padding: "3px 12px", borderRadius: 99, background: course.accent, color: course.color, fontWeight: 600 }}>{tag}</span>
+              ))}
+            </div>
+            <div style={{ background: "#F8F9FA", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
+              <p style={{ fontSize: 14, color: "#495057", lineHeight: 1.8, margin: 0 }}>{lesson.summary}</p>
+            </div>
+            <a href={lesson.notebookUrl} target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "14px 0", borderRadius: 12, background: `linear-gradient(135deg, ${course.color}, ${course.color}CC)`, color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 15, border: "none", cursor: "pointer", transition: "transform 0.15s" }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}>
+              📓 NotebookLM で詳しく見る
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Calendar ───
+    function Calendar({ year, month, lessons, course, onLessonClick, onMonthChange }) {
+      const days = getDaysInMonth(year, month);
+      const firstDay = getFirstDayOfWeek(year, month);
+      const cells = [];
+      for (let i = 0; i < firstDay; i++) cells.push(null);
+      for (let d = 1; d <= days; d++) cells.push(d);
+
+      const lessonsByDate = {};
+      lessons.forEach((l) => { lessonsByDate[l.date] = l; });
+
+      const today = new Date();
+      const isToday = (d) => today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+
+      return (
+        <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <button onClick={() => onMonthChange(-1)} style={{ background: "none", border: "1px solid #DEE2E6", borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontSize: 14, color: "#495057" }}>←</button>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1A1A2E" }}>{year}年 {MONTH_NAMES[month]}</h3>
+            <button onClick={() => onMonthChange(1)} style={{ background: "none", border: "1px solid #DEE2E6", borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontSize: 14, color: "#495057" }}>→</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+            {WEEKDAYS.map((w, i) => (
+              <div key={w} style={{ textAlign: "center", fontSize: 12, fontWeight: 700, padding: "8px 0", color: i === 0 ? "#FF6B6B" : i === 6 ? "#339AF0" : "#868E96" }}>{w}</div>
+            ))}
+            {cells.map((d, i) => {
+              const dateStr = d ? formatDate(year, month, d) : null;
+              const lesson = dateStr ? lessonsByDate[dateStr] : null;
+              return (
+                <div key={i} onClick={() => lesson && onLessonClick(lesson)}
+                  style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 12, background: lesson ? course.accent : isToday(d) ? "#F1F3F5" : "transparent", cursor: lesson ? "pointer" : "default", border: lesson ? `2px solid ${course.color}40` : isToday(d) ? "2px solid #DEE2E6" : "2px solid transparent", transition: "all 0.15s", minHeight: 44 }}
+                  onMouseEnter={(e) => { if (lesson) e.currentTarget.style.transform = "scale(1.08)"; }}
+                  onMouseLeave={(e) => { if (lesson) e.currentTarget.style.transform = "scale(1)"; }}>
+                  {d && (<>
+                    <span style={{ fontSize: 13, fontWeight: lesson ? 800 : 500, color: lesson ? course.color : isToday(d) ? "#1A1A2E" : "#868E96", fontFamily: "'DM Mono', monospace" }}>{d}</span>
+                    {lesson && (<div style={{ width: 5, height: 5, borderRadius: "50%", background: course.color, marginTop: 3 }} />)}
+                  </>)}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Main App ───
+    function App() {
+      const [activeCourse, setActiveCourse] = useState("kids");
+      const [viewMode, setViewMode] = useState("list");
+      const [selectedLesson, setSelectedLesson] = useState(null);
+      const [calYear, setCalYear] = useState(2026);
+      const [calMonth, setCalMonth] = useState(0);
+      const [mounted, setMounted] = useState(false);
+      const [openMonths, setOpenMonths] = useState({});
+
+      useEffect(() => setMounted(true), []);
+
+      const course = COURSES.find((c) => c.id === activeCourse);
+      const lessons = LESSONS_DATA[activeCourse] || [];
+
+      const lessonsByMonth = {};
+      lessons.forEach((l) => {
+        const key = l.date.slice(0, 7);
+        if (!lessonsByMonth[key]) lessonsByMonth[key] = [];
+        lessonsByMonth[key].push(l);
+      });
+      const monthKeys = Object.keys(lessonsByMonth).sort();
+
+      const toggleMonth = (key) => {
+        setOpenMonths((prev) => ({ ...prev, [key]: !prev[key] }));
+      };
+
+      useEffect(() => { setOpenMonths({}); }, [activeCourse]);
+
+      const handleMonthChange = (dir) => {
+        let newMonth = calMonth + dir;
+        let newYear = calYear;
+        if (newMonth > 11) { newMonth = 0; newYear++; }
+        if (newMonth < 0) { newMonth = 11; newYear--; }
+        setCalMonth(newMonth);
+        setCalYear(newYear);
+      };
+
+      return (
+        <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #FAFBFC 0%, #F0F2F5 100%)" }}>
+
+          {/* Header */}
+          <header style={{ background: "#fff", borderBottom: "1px solid #E9ECEF", padding: "0 24px", position: "sticky", top: 0, zIndex: 100 }}>
+            <div style={{ maxWidth: 960, margin: "0 auto", padding: "16px 0" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: "linear-gradient(135deg, #FF6B6B, #7950F2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🔭</div>
+                  <div>
+                    <h1 style={{ fontSize: 18, fontWeight: 900, color: "#1A1A2E", margin: 0, letterSpacing: -0.5 }}>探究教室 TRAIL</h1>
+                    <p style={{ fontSize: 11, color: "#868E96", margin: 0, fontWeight: 500, letterSpacing: 1 }}>CURRICULUM PORTAL</p>
+                  </div>
+                </div>
+                <div style={{ display: "flex", background: "#F1F3F5", borderRadius: 10, padding: 3 }}>
+                  {[{ key: "list", label: "一覧" }, { key: "calendar", label: "カレンダー" }].map((v) => (
+                    <button key={v.key} onClick={() => setViewMode(v.key)}
+                      style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: viewMode === v.key ? "#fff" : "transparent", boxShadow: viewMode === v.key ? "0 1px 4px rgba(0,0,0,0.08)" : "none", color: viewMode === v.key ? "#1A1A2E" : "#868E96", fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all 0.15s", fontFamily: "'Zen Kaku Gothic New', sans-serif" }}>
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Course Tabs */}
+          <div style={{ background: "#fff", borderBottom: "1px solid #E9ECEF", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 24px", display: "flex", gap: 4 }}>
+              {COURSES.map((c) => (
+                <button key={c.id} onClick={() => setActiveCourse(c.id)}
+                  style={{ padding: "14px 18px", border: "none", background: "transparent", borderBottom: activeCourse === c.id ? `3px solid ${c.color}` : "3px solid transparent", color: activeCourse === c.id ? c.color : "#868E96", fontWeight: activeCourse === c.id ? 800 : 500, fontSize: 13.5, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s", fontFamily: "'Zen Kaku Gothic New', sans-serif" }}>
+                  <span style={{ marginRight: 6 }}>{c.icon}</span>{c.name}
+                  <span style={{ display: "block", fontSize: 10, fontWeight: 500, color: activeCourse === c.id ? `${c.color}99` : "#ADB5BD", marginTop: 2 }}>
+                    {c.target}<span style={{ marginLeft: 4 }}>/ {c.day}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Course Header */}
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 24px 0", animation: mounted ? "slideIn 0.3s ease" : "none" }}>
+            <div style={{ background: `linear-gradient(135deg, ${course.color}10, ${course.accent})`, borderRadius: 16, padding: "20px 28px", border: `1px solid ${course.color}15`, display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: `linear-gradient(135deg, ${course.color}, ${course.color}BB)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>{course.icon}</div>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1A1A2E", margin: "0 0 4px" }}>
+                  {course.name}
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "#868E96", marginLeft: 10 }}>{course.target}　📅 毎週{course.day}</span>
+                </h2>
+                <p style={{ fontSize: 13.5, color: "#5C5C6F", margin: 0 }}>{course.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "24px 24px 60px" }}>
+            {viewMode === "list" ? (
+              <div style={{ display: "grid", gap: 12, animation: "slideIn 0.3s ease" }}>
+                {monthKeys.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: 60, color: "#ADB5BD" }}>まだ授業が登録されていません</div>
+                ) : (
+                  monthKeys.map((monthKey) => {
+                    const monthLessons = lessonsByMonth[monthKey];
+                    const isOpen = !!openMonths[monthKey];
+                    const [y, m] = monthKey.split("-");
+                    const monthLabel = `${y}年 ${parseInt(m)}月`;
+                    return (
+                      <div key={monthKey} style={{ animation: "slideIn 0.3s ease" }}>
+                        <button onClick={() => toggleMonth(monthKey)}
+                          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", background: isOpen ? `linear-gradient(135deg, ${course.color}08, ${course.accent}80)` : "#fff", border: `1px solid ${isOpen ? course.color + "30" : "#E9ECEF"}`, borderRadius: isOpen ? "14px 14px 0 0" : 14, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Zen Kaku Gothic New', sans-serif" }}
+                          onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "#F8F9FA"; }}
+                          onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.background = "#fff"; }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <span style={{ fontSize: 18, fontWeight: 800, color: isOpen ? course.color : "#1A1A2E" }}>{monthLabel}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 99, background: isOpen ? course.color : "#E9ECEF", color: isOpen ? "#fff" : "#868E96", transition: "all 0.2s" }}>{monthLessons.length}回</span>
+                          </div>
+                          <span style={{ fontSize: 16, color: isOpen ? course.color : "#ADB5BD", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.25s ease", display: "inline-block" }}>▼</span>
+                        </button>
+                        {isOpen && (
+                          <div style={{ border: `1px solid ${course.color}20`, borderTop: "none", borderRadius: "0 0 14px 14px", background: "#fff", padding: "12px 14px", display: "grid", gap: 10, animation: "slideIn 0.2s ease" }}>
+                            {monthLessons.map((lesson, i) => (
+                              <div key={lesson.id} style={{ animation: `slideIn 0.2s ease ${i * 0.04}s both` }}>
+                                <LessonCard lesson={lesson} course={course} onClick={() => setSelectedLesson(lesson)} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : (
+              <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #E9ECEF", animation: "slideIn 0.3s ease" }}>
+                <Calendar year={calYear} month={calMonth} lessons={lessons} course={course} onLessonClick={setSelectedLesson} onMonthChange={handleMonthChange} />
+                <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #F1F3F5", display: "flex", flexWrap: "wrap", gap: 12 }}>
+                  {lessons.filter((l) => l.date.startsWith(formatDate(calYear, calMonth, 1).slice(0, 7))).map((l) => (
+                    <button key={l.id} onClick={() => setSelectedLesson(l)}
+                      style={{ display: "flex", alignItems: "center", gap: 8, background: course.accent, border: "none", borderRadius: 10, padding: "8px 14px", cursor: "pointer", transition: "transform 0.15s", fontFamily: "'Zen Kaku Gothic New', sans-serif" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: course.color }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#495057" }}>{l.date.split("-")[2]}日 - {l.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {selectedLesson && <LessonModal lesson={selectedLesson} course={course} onClose={() => setSelectedLesson(null)} />}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
