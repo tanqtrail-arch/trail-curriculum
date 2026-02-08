@@ -26,7 +26,7 @@ function App() {
   const [viewMode, setViewMode] = useState('calendar')
   const [selectedLesson, setSelectedLesson] = useState(null)
   const [calYear, setCalYear] = useState(2026)
-  const [calMonth, setCalMonth] = useState(new Date().getMonth())
+  const [calMonth, setCalMonth] = useState(0)
   const [openMonths, setOpenMonths] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState(null)
