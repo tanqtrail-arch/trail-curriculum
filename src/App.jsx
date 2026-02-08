@@ -10,23 +10,51 @@ import LessonModal from './components/LessonModal'
 import Calendar from './components/Calendar'
 import AdminModal from './components/AdminModal'
 
+const ALL_COURSE = {
+  id: 'all',
+  name: '全クラス',
+  target: '全学年',
+  day: '全曜日',
+  color: '#495057',
+  accent: '#F1F3F5',
+  icon: '📋',
+  description: '全コースの授業を新着順で表示',
+}
+
 function App() {
-  const [activeCourse, setActiveCourse] = useState('kids')
-  const [viewMode, setViewMode] = useState('list')
+  const [activeCourse, setActiveCourse] = useState('all')
+  const [viewMode, setViewMode] = useState('calendar')
   const [selectedLesson, setSelectedLesson] = useState(null)
   const [calYear, setCalYear] = useState(2026)
-  const [calMonth, setCalMonth] = useState(0)
+  const [calMonth, setCalMonth] = useState(new Date().getMonth())
   const [openMonths, setOpenMonths] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [adminLesson, setAdminLesson] = useState(undefined) // undefined = closed, null = new, object = edit
+  const [adminLesson, setAdminLesson] = useState(undefined)
   const [lessons, setLessons] = useState(lessonsData)
 
-  const course = coursesData.find((c) => c.id === activeCourse)
-  const courseLessons = lessons[activeCourse] || []
+  const isAll = activeCourse === 'all'
+  const course = isAll ? ALL_COURSE : coursesData.find((c) => c.id === activeCourse)
 
-  // Collect all unique tags for current course
+  // Build lessons with courseId attached
+  const courseLessons = useMemo(() => {
+    if (isAll) {
+      const all = []
+      for (const [courseId, items] of Object.entries(lessons)) {
+        items.forEach((l) => all.push({ ...l, courseId }))
+      }
+      // newest first
+      all.sort((a, b) => b.date.localeCompare(a.date))
+      return all
+    }
+    return (lessons[activeCourse] || []).map((l) => ({ ...l, courseId: activeCourse }))
+  }, [lessons, activeCourse, isAll])
+
+  // Helper: get course object by id
+  const getCourse = (courseId) => coursesData.find((c) => c.id === courseId) || ALL_COURSE
+
+  // Collect all unique tags for current view
   const allTags = useMemo(() => {
     const tags = new Set()
     courseLessons.forEach((l) => l.tags.forEach((t) => tags.add(t)))
@@ -51,7 +79,7 @@ function App() {
     return result
   }, [courseLessons, searchQuery, selectedTag])
 
-  // Group by month
+  // Group by month (newest first for 'all')
   const lessonsByMonth = useMemo(() => {
     const grouped = {}
     filteredLessons.forEach((l) => {
@@ -61,7 +89,7 @@ function App() {
     })
     return grouped
   }, [filteredLessons])
-  const monthKeys = Object.keys(lessonsByMonth).sort()
+  const monthKeys = Object.keys(lessonsByMonth).sort((a, b) => isAll ? b.localeCompare(a) : a.localeCompare(b))
 
   // Reset state on course change
   useEffect(() => {
@@ -87,33 +115,30 @@ function App() {
   const handleSaveLesson = (lessonData, courseId) => {
     setLessons((prev) => {
       const updated = { ...prev }
-      const courseLessons = [...(updated[courseId] || [])]
-
-      const existingIdx = courseLessons.findIndex((l) => l.id === lessonData.id)
+      const cl = [...(updated[courseId] || [])]
+      const existingIdx = cl.findIndex((l) => l.id === lessonData.id)
       if (existingIdx >= 0) {
-        // If moving to a different course, remove from old
-        if (courseId !== activeCourse && adminLesson) {
-          const oldCourse = [...(updated[activeCourse] || [])]
-          updated[activeCourse] = oldCourse.filter((l) => l.id !== lessonData.id)
+        if (courseId !== (adminLesson?.courseId || activeCourse) && adminLesson) {
+          const oldCourseId = adminLesson.courseId || activeCourse
+          updated[oldCourseId] = (updated[oldCourseId] || []).filter((l) => l.id !== lessonData.id)
         }
-        courseLessons[existingIdx] = lessonData
+        cl[existingIdx] = lessonData
       } else {
-        courseLessons.push(lessonData)
+        cl.push(lessonData)
       }
-
-      // Sort by date
-      courseLessons.sort((a, b) => a.date.localeCompare(b.date))
-      updated[courseId] = courseLessons
+      cl.sort((a, b) => a.date.localeCompare(b.date))
+      updated[courseId] = cl
       return updated
     })
     setAdminLesson(undefined)
   }
 
-  const handleDeleteLesson = (lessonId) => {
+  const handleDeleteLesson = (lessonId, courseId) => {
     if (!confirm('このレッスンを削除しますか？')) return
+    const targetCourse = courseId || activeCourse
     setLessons((prev) => {
       const updated = { ...prev }
-      updated[activeCourse] = (updated[activeCourse] || []).filter((l) => l.id !== lessonId)
+      updated[targetCourse] = (updated[targetCourse] || []).filter((l) => l.id !== lessonId)
       return updated
     })
   }
@@ -135,7 +160,6 @@ function App() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
         <CourseHeader course={course} lessonCount={courseLessons.length} />
 
-        {/* Search & Filter */}
         <SearchFilter
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -146,7 +170,6 @@ function App() {
           courseAccent={course.accent}
         />
 
-        {/* Admin: Add new button */}
         {isAdmin && (
           <button
             onClick={() => setAdminLesson(null)}
@@ -178,23 +201,23 @@ function App() {
                       className="w-full flex items-center justify-between px-5 py-3.5 border transition-all cursor-pointer"
                       style={{
                         background: isOpen
-                          ? `linear-gradient(135deg, ${course.color}06, ${course.accent}80)`
+                          ? isAll ? 'linear-gradient(135deg, #49505706, #F1F3F580)' : `linear-gradient(135deg, ${course.color}06, ${course.accent}80)`
                           : '#fff',
-                        borderColor: isOpen ? `${course.color}30` : '#f3f4f6',
+                        borderColor: isOpen ? (isAll ? '#49505730' : `${course.color}30`) : '#f3f4f6',
                         borderRadius: isOpen ? '16px 16px 0 0' : '16px',
                       }}
                     >
                       <div className="flex items-center gap-3">
                         <span
                           className="text-lg font-black"
-                          style={{ color: isOpen ? course.color : '#1f2937' }}
+                          style={{ color: isOpen ? (isAll ? '#495057' : course.color) : '#1f2937' }}
                         >
                           {monthLabel}
                         </span>
                         <span
                           className="text-xs font-bold px-2.5 py-0.5 rounded-full transition-all"
                           style={{
-                            background: isOpen ? course.color : '#f3f4f6',
+                            background: isOpen ? (isAll ? '#495057' : course.color) : '#f3f4f6',
                             color: isOpen ? '#fff' : '#9ca3af',
                           }}
                         >
@@ -204,7 +227,7 @@ function App() {
                       <span
                         className="text-sm transition-transform duration-200 inline-block"
                         style={{
-                          color: isOpen ? course.color : '#d1d5db',
+                          color: isOpen ? (isAll ? '#495057' : course.color) : '#d1d5db',
                           transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                         }}
                       >
@@ -214,19 +237,23 @@ function App() {
                     {isOpen && (
                       <div
                         className="border border-t-0 rounded-b-2xl bg-white p-3 space-y-2.5 animate-slideIn"
-                        style={{ borderColor: `${course.color}20` }}
+                        style={{ borderColor: isAll ? '#49505720' : `${course.color}20` }}
                       >
-                        {monthLessons.map((lesson) => (
-                          <LessonCard
-                            key={lesson.id}
-                            lesson={lesson}
-                            course={course}
-                            onClick={() => setSelectedLesson(lesson)}
-                            onEdit={(l) => setAdminLesson(l)}
-                            onDelete={handleDeleteLesson}
-                            isAdmin={isAdmin}
-                          />
-                        ))}
+                        {monthLessons.map((lesson) => {
+                          const lessonCourse = isAll ? getCourse(lesson.courseId) : course
+                          return (
+                            <LessonCard
+                              key={lesson.id}
+                              lesson={lesson}
+                              course={lessonCourse}
+                              onClick={() => setSelectedLesson(lesson)}
+                              onEdit={(l) => setAdminLesson(l)}
+                              onDelete={(id) => handleDeleteLesson(id, lesson.courseId)}
+                              isAdmin={isAdmin}
+                              showCourseBadge={isAll}
+                            />
+                          )
+                        })}
                       </div>
                     )}
                   </div>
@@ -241,6 +268,9 @@ function App() {
               month={calMonth}
               lessons={courseLessons}
               course={course}
+              courses={coursesData}
+              isAll={isAll}
+              getCourse={getCourse}
               onLessonClick={setSelectedLesson}
               onMonthChange={handleMonthChange}
             />
@@ -248,20 +278,18 @@ function App() {
         )}
       </div>
 
-      {/* Lesson detail modal */}
       {selectedLesson && (
         <LessonModal
           lesson={selectedLesson}
-          course={course}
+          course={isAll ? getCourse(selectedLesson.courseId) : course}
           onClose={() => setSelectedLesson(null)}
         />
       )}
 
-      {/* Admin modal */}
       {adminLesson !== undefined && (
         <AdminModal
           lesson={adminLesson}
-          course={course}
+          course={isAll ? (adminLesson ? getCourse(adminLesson.courseId) : coursesData[0]) : course}
           courses={coursesData}
           onSave={handleSaveLesson}
           onClose={() => setAdminLesson(undefined)}

@@ -1,4 +1,4 @@
-export default function LessonCard({ lesson, course, onClick, onEdit, onDelete, isAdmin }) {
+export default function LessonCard({ lesson, course, onClick, onEdit, onDelete, isAdmin, showCourseBadge }) {
   return (
     <div
       onClick={onClick}
@@ -16,7 +16,17 @@ export default function LessonCard({ lesson, course, onClick, onEdit, onDelete, 
       }}
     >
       <div className="flex justify-between items-start mb-2">
-        <span className="text-xs text-gray-400 font-mono">{lesson.date.replace(/-/g, '.')}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-400 font-mono">{lesson.date.replace(/-/g, '.')}</span>
+          {showCourseBadge && (
+            <span
+              className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+              style={{ background: course.accent, color: course.color }}
+            >
+              {course.icon} {course.name}
+            </span>
+          )}
+        </div>
         <div className="flex gap-1.5 flex-wrap justify-end">
           {lesson.tags.map((tag) => (
             <span

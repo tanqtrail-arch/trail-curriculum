@@ -4,16 +4,14 @@ const MONTH_NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8�
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate()
 }
-
 function getFirstDayOfWeek(year, month) {
   return new Date(year, month, 1).getDay()
 }
-
 function formatDate(y, m, d) {
   return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
 
-export default function Calendar({ year, month, lessons, course, onLessonClick, onMonthChange }) {
+export default function Calendar({ year, month, lessons, course, courses, isAll, getCourse, onLessonClick, onMonthChange }) {
   const days = getDaysInMonth(year, month)
   const firstDay = getFirstDayOfWeek(year, month)
   const cells = []
@@ -29,6 +27,13 @@ export default function Calendar({ year, month, lessons, course, onLessonClick, 
   const today = new Date()
   const isToday = (d) =>
     today.getFullYear() === year && today.getMonth() === month && today.getDate() === d
+
+  const monthPrefix = formatDate(year, month, 1).slice(0, 7)
+
+  // Lessons for this month, newest first
+  const monthLessons = lessons
+    .filter((l) => l.date.startsWith(monthPrefix))
+    .sort((a, b) => b.date.localeCompare(a.date))
 
   return (
     <div>
@@ -69,6 +74,10 @@ export default function Calendar({ year, month, lessons, course, onLessonClick, 
           const dateStr = d ? formatDate(year, month, d) : null
           const dayLessons = dateStr ? lessonsByDate[dateStr] : null
           const hasLesson = dayLessons && dayLessons.length > 0
+
+          // For "all" mode, pick the first lesson's course color for the cell background
+          const cellCourse = hasLesson && isAll ? getCourse(dayLessons[0].courseId) : course
+
           return (
             <div
               key={i}
@@ -81,9 +90,9 @@ export default function Calendar({ year, month, lessons, course, onLessonClick, 
                     : ''
               }`}
               style={{
-                background: hasLesson ? course.accent : undefined,
+                background: hasLesson ? (isAll ? '#F8F9FA' : course.accent) : undefined,
                 border: hasLesson
-                  ? `2px solid ${course.color}40`
+                  ? `2px solid ${isAll ? '#dee2e6' : `${course.color}40`}`
                   : isToday(d)
                     ? '2px solid #e5e7eb'
                     : '2px solid transparent',
@@ -95,20 +104,25 @@ export default function Calendar({ year, month, lessons, course, onLessonClick, 
                     className="text-xs font-mono"
                     style={{
                       fontWeight: hasLesson ? 800 : 500,
-                      color: hasLesson ? course.color : isToday(d) ? '#1f2937' : '#9ca3af',
+                      color: hasLesson
+                        ? (isAll ? '#495057' : course.color)
+                        : isToday(d) ? '#1f2937' : '#9ca3af',
                     }}
                   >
                     {d}
                   </span>
                   {hasLesson && (
-                    <div className="flex gap-0.5 mt-1">
-                      {dayLessons.map((_, idx) => (
-                        <div
-                          key={idx}
-                          className="w-1.5 h-1.5 rounded-full"
-                          style={{ background: course.color }}
-                        />
-                      ))}
+                    <div className="flex gap-0.5 mt-0.5">
+                      {dayLessons.slice(0, 5).map((l, idx) => {
+                        const dotCourse = isAll ? getCourse(l.courseId) : course
+                        return (
+                          <div
+                            key={idx}
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ background: dotCourse.color }}
+                          />
+                        )
+                      })}
                     </div>
                   )}
                 </>
@@ -119,21 +133,40 @@ export default function Calendar({ year, month, lessons, course, onLessonClick, 
       </div>
 
       {/* Lesson list below calendar */}
-      <div className="mt-5 pt-4 border-t border-gray-100 flex flex-wrap gap-2">
-        {lessons
-          .filter((l) => l.date.startsWith(formatDate(year, month, 1).slice(0, 7)))
-          .map((l) => (
-            <button
-              key={l.id}
-              onClick={() => onLessonClick(l)}
-              className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-gray-600 hover:scale-[1.03] transition-transform cursor-pointer"
-              style={{ background: course.accent }}
-            >
-              <div className="w-2 h-2 rounded-full" style={{ background: course.color }} />
-              {l.date.split('-')[2]}日 - {l.title}
-            </button>
-          ))}
-      </div>
+      {monthLessons.length > 0 && (
+        <div className="mt-5 pt-4 border-t border-gray-100 space-y-1.5">
+          {monthLessons.map((l) => {
+            const lCourse = isAll ? getCourse(l.courseId) : course
+            return (
+              <button
+                key={l.id}
+                onClick={() => onLessonClick(l)}
+                className="w-full flex items-center gap-3 rounded-xl px-4 py-2.5 text-left hover:scale-[1.01] transition-transform cursor-pointer"
+                style={{ background: lCourse.accent + '80' }}
+              >
+                <div
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ background: lCourse.color }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-gray-400">{l.date.split('-')[2]}日</span>
+                    {isAll && (
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded font-bold"
+                        style={{ background: lCourse.color + '20', color: lCourse.color }}
+                      >
+                        {lCourse.icon} {lCourse.name}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 truncate block">{l.title}</span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

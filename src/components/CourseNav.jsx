@@ -1,8 +1,18 @@
 export default function CourseNav({ courses, activeCourse, setActiveCourse }) {
+  const allTab = {
+    id: 'all',
+    name: '全クラス',
+    icon: '📋',
+    color: '#495057',
+    target: '全学年',
+    day: '全曜日',
+  }
+  const tabs = [allTab, ...courses]
+
   return (
     <div className="bg-white border-b border-gray-100 overflow-x-auto">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex gap-1">
-        {courses.map((c) => {
+        {tabs.map((c) => {
           const isActive = activeCourse === c.id
           return (
             <button
@@ -18,13 +28,15 @@ export default function CourseNav({ courses, activeCourse, setActiveCourse }) {
                 <span className="mr-1.5">{c.icon}</span>
                 {c.name}
               </span>
-              <span
-                className="block text-[10px] font-medium mt-0.5 transition-colors"
-                style={{ color: isActive ? `${c.color}99` : '#d1d5db' }}
-              >
-                {c.target}
-                <span className="ml-1">/ {c.day}</span>
-              </span>
+              {c.target && (
+                <span
+                  className="block text-[10px] font-medium mt-0.5 transition-colors"
+                  style={{ color: isActive ? `${c.color}99` : '#d1d5db' }}
+                >
+                  {c.target}
+                  <span className="ml-1">/ {c.day}</span>
+                </span>
+              )}
             </button>
           )
         })}
