@@ -1,0 +1,7 @@
+[
+  { "id": "kids", "name": "探究キッズ", "target": "小1〜小2", "day": "月曜日", "color": "#FF6B6B", "accent": "#FFE0E0", "icon": "🌱", "description": "好奇心の芽を育てる、はじめての探究体験" },
+  { "id": "starter", "name": "探究スターター", "target": "小2〜小3", "day": "月曜日", "color": "#FFA94D", "accent": "#FFF0E0", "icon": "⭐", "description": "「なぜ？」を深掘りする力を身につける" },
+  { "id": "basic", "name": "探究ベーシック", "target": "小4〜小5", "day": "土曜日", "color": "#51CF66", "accent": "#E0FFE8", "icon": "🔍", "description": "自分で問いを立て、調べ、まとめる力を育てる" },
+  { "id": "advance", "name": "探究アドバンス", "target": "小6〜中1", "day": "火曜日", "color": "#339AF0", "accent": "#E0F0FF", "icon": "🚀", "description": "論理的思考と発信力を高める探究学習" },
+  { "id": "limitless", "name": "探究リミットレス", "target": "中2〜中3", "day": "火曜日", "color": "#7950F2", "accent": "#F0E8FF", "icon": "♾️", "description": "AI時代を生き抜く、限界なき探究" }
+]
