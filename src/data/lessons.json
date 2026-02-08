@@ -1,0 +1,42 @@
+{
+  "kids": [
+    { "id": 101, "date": "2026-01-05", "title": "探究ってなに？", "summary": "「なぜ？」「どうして？」を大切にする探究学習のオリエンテーション。自己紹介と好きなものマップを作りました。", "tags": ["導入", "自己紹介"], "notebookUrl": "#" },
+    { "id": 102, "date": "2026-01-12", "title": "色のふしぎ", "summary": "絵の具を混ぜて新しい色を作る実験。「なぜ混ぜると違う色になるの？」という問いを探究しました。", "tags": ["理科", "アート"], "notebookUrl": "#" },
+    { "id": 103, "date": "2026-01-19", "title": "音の正体をさぐろう", "summary": "輪ゴムや紙コップを使って音の振動を体験。大きい音と小さい音の違いを調べました。", "tags": ["理科", "実験"], "notebookUrl": "#" },
+    { "id": 104, "date": "2026-01-26", "title": "冬の自然たんけん", "summary": "冬の植物や空気の変化を観察。「冬はなぜ寒いの？」について考えました。", "tags": ["自然", "観察"], "notebookUrl": "#" },
+    { "id": 105, "date": "2026-02-02", "title": "どうして空は青いの？", "summary": "光の散乱について、実験をしながら考えました。プリズムを使って虹を作る体験も。", "tags": ["理科", "光"], "notebookUrl": "#" }
+  ],
+  "starter": [
+    { "id": 201, "date": "2026-01-05", "title": "ミイラと永遠の命", "summary": "なぜ人は死後の世界を信じたのか？古代文明のなぞに迫る探究。", "tags": ["世界史", "古代文明"], "notebookUrl": "https://notebooklm.google.com/notebook/beb4c588-e19e-4cae-a447-b9408118abf3" },
+    { "id": 202, "date": "2026-01-05", "title": "スフィンクスのなぞ", "summary": "砂漠に眠る巨大像の正体。地球と資源について考える自然探究。", "tags": ["自然", "地球と資源"], "notebookUrl": "https://notebooklm.google.com/notebook/6e3ffd05-e5ce-42c1-bd2a-0b4a58691e81" },
+    { "id": 203, "date": "2026-01-05", "title": "グリーンランド", "summary": "氷におおわれた島の本当の姿。資源と国際競争を考える。", "tags": ["国際問題", "資源と国際競争"], "notebookUrl": "https://notebooklm.google.com/notebook/4152a565-1408-4fa3-98b5-8b854c59d60b" },
+    { "id": 204, "date": "2026-01-12", "title": "レアアース", "summary": "現代文明を支える見えない資源。資源と国際競争を探究する。", "tags": ["国際問題", "資源と国際競争"], "notebookUrl": "https://notebooklm.google.com/notebook/d0c36709-898d-4f5d-93b6-e876c6e2042f" },
+    { "id": 205, "date": "2026-01-19", "title": "鳥獣戯画", "summary": "日本最古のマンガは何を伝えた？飛鳥・奈良・平安の日本文化を探る。", "tags": ["日本文化", "飛鳥・奈良・平安"], "notebookUrl": "https://notebooklm.google.com/notebook/4d022939-dfc2-45d6-a3bf-a70bd7fede0e" },
+    { "id": 206, "date": "2026-01-26", "title": "富嶽三十六景", "summary": "世界を魅了した富士山の力。浮世絵を通じて日本文化を探究する。", "tags": ["日本文化", "浮世絵"], "notebookUrl": "https://notebooklm.google.com/notebook/0e4f9f6b-2a58-4ff1-8d45-26f6a648e969" },
+    { "id": 207, "date": "2026-02-02", "title": "東海道五十三次", "summary": "旅ブームを生んだ江戸のメディア。浮世絵と日本文化を探究する。", "tags": ["日本文化", "浮世絵"], "notebookUrl": "https://notebooklm.google.com/notebook/ec170a9b-53a5-4d02-8921-bb522abe426f" }
+  ],
+  "basic": [
+    { "id": 301, "date": "2026-01-10", "title": "ミイラと永遠の命", "summary": "なぜ人は死後の世界を信じたのか？古代文明のなぞに迫る探究。", "tags": ["世界史", "古代文明"], "notebookUrl": "https://notebooklm.google.com/notebook/beb4c588-e19e-4cae-a447-b9408118abf3" },
+    { "id": 302, "date": "2026-01-10", "title": "スフィンクスのなぞ", "summary": "砂漠に眠る巨大像の正体。地球と資源について考える自然探究。", "tags": ["自然", "地球と資源"], "notebookUrl": "https://notebooklm.google.com/notebook/6e3ffd05-e5ce-42c1-bd2a-0b4a58691e81" },
+    { "id": 303, "date": "2026-01-17", "title": "グリーンランド", "summary": "氷におおわれた島の本当の姿。資源と国際競争を考える。", "tags": ["国際問題", "資源と国際競争"], "notebookUrl": "https://notebooklm.google.com/notebook/4152a565-1408-4fa3-98b5-8b854c59d60b" },
+    { "id": 304, "date": "2026-01-17", "title": "レアアース", "summary": "現代文明を支える見えない資源。資源と国際競争を探究する。", "tags": ["国際問題", "資源と国際競争"], "notebookUrl": "https://notebooklm.google.com/notebook/d0c36709-898d-4f5d-93b6-e876c6e2042f" },
+    { "id": 305, "date": "2026-01-24", "title": "鳥獣戯画", "summary": "日本最古のマンガは何を伝えた？飛鳥・奈良・平安の日本文化を探る。", "tags": ["日本文化", "飛鳥・奈良・平安"], "notebookUrl": "https://notebooklm.google.com/notebook/4d022939-dfc2-45d6-a3bf-a70bd7fede0e" },
+    { "id": 306, "date": "2026-01-24", "title": "富嶽三十六景", "summary": "世界を魅了した富士山の力。浮世絵を通じて日本文化を探究する。", "tags": ["日本文化", "浮世絵"], "notebookUrl": "https://notebooklm.google.com/notebook/0e4f9f6b-2a58-4ff1-8d45-26f6a648e969" },
+    { "id": 307, "date": "2026-01-31", "title": "東海道五十三次", "summary": "旅ブームを生んだ江戸のメディア。浮世絵と日本文化を探究する。", "tags": ["日本文化", "浮世絵"], "notebookUrl": "https://notebooklm.google.com/notebook/ec170a9b-53a5-4d02-8921-bb522abe426f" },
+    { "id": 308, "date": "2026-02-07", "title": "ひまわりのなぞ", "summary": "なぜゴッホはひまわりを描き続けたのか？名画に隠された情熱と芸術の力を探究する。", "tags": ["芸術", "絵画"], "notebookUrl": "https://notebooklm.google.com/notebook/26b129a2-c400-40d8-b5e0-bb7ebb425c43" }
+  ],
+  "advance": [
+    { "id": 401, "date": "2026-01-06", "title": "クリティカルシンキング入門", "summary": "思い込みや偏見に気づくワーク。「本当にそうか？」と問い直す習慣を身につけます。", "tags": ["思考力", "導入"], "notebookUrl": "#" },
+    { "id": 402, "date": "2026-01-13", "title": "SDGsと私たちの生活", "summary": "17の目標から自分に関係の深いものを選び、地域の課題と結びつけて考えました。", "tags": ["社会課題", "SDGs"], "notebookUrl": "#" },
+    { "id": 403, "date": "2026-01-20", "title": "データリテラシー基礎", "summary": "平均・中央値・最頻値の違いを学び、データの読み方・騙されない見方を練習しました。", "tags": ["数学", "データ"], "notebookUrl": "#" },
+    { "id": 404, "date": "2026-01-27", "title": "AIアートに挑戦", "summary": "画像生成AIを使って作品を制作。「AIの創造性」について議論しました。", "tags": ["AI", "アート"], "notebookUrl": "#" },
+    { "id": 405, "date": "2026-02-03", "title": "社会課題をAIで解決？", "summary": "食品ロスの問題を題材に、AIでどんな解決策が考えられるかディスカッションしました。", "tags": ["AI", "社会課題"], "notebookUrl": "#" }
+  ],
+  "limitless": [
+    { "id": 501, "date": "2026-01-06", "title": "AIと共創する未来", "summary": "AI時代に求められるスキルとは何か。人間ならではの価値について深く議論しました。", "tags": ["AI", "未来"], "notebookUrl": "#" },
+    { "id": 502, "date": "2026-01-13", "title": "起業家マインドセット", "summary": "課題発見から解決策の提案まで、起業家的な思考プロセスを体験しました。", "tags": ["起業", "思考力"], "notebookUrl": "#" },
+    { "id": 503, "date": "2026-01-20", "title": "論文を読んでみよう", "summary": "学術論文の構造を学び、実際の論文を読んで要約する練習をしました。", "tags": ["研究", "読解"], "notebookUrl": "#" },
+    { "id": 504, "date": "2026-01-27", "title": "ディベート実践", "summary": "「AIは人間の仕事を奪うか」をテーマに本格的なディベートを行いました。", "tags": ["ディベート", "AI"], "notebookUrl": "#" },
+    { "id": 505, "date": "2026-02-03", "title": "AI時代のキャリアを考える", "summary": "10年後の仕事の変化を予測し、自分の「強み×AI」の掛け合わせを探りました。", "tags": ["キャリア", "AI"], "notebookUrl": "#" }
+  ]
+}
