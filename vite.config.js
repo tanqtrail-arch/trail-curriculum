@@ -5,13 +5,4 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), viteSingleFile()],
-  build: {
-    target: 'esnext',
-    modulePreload: false,
-    rollupOptions: {
-      output: {
-        format: 'iife',
-      },
-    },
-  },
 })

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node -e \"const fs=require('fs');let h=fs.readFileSync('dist/index.html','utf8');h=h.replace('<script type=\\\"module\\\" crossorigin>','<script>');fs.writeFileSync('index.html',h)\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
