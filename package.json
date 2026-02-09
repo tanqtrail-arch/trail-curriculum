@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node -e \"const fs=require('fs');let h=fs.readFileSync('dist/index.html','utf8');h=h.replace('<script type=\\\"module\\\" crossorigin>','<script>');fs.writeFileSync('index.html',h)\"",
+    "dev": "vite --config vite.config.js",
+    "build": "vite build --config vite.config.js && node scripts/postbuild.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
